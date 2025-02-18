@@ -1,8 +1,34 @@
-const users = require("./person.json");
+let cities = [];
 
-const cities = require("./cities.json");
+let users = [];
 
-const specializations = require("./specializations.json");
+let specializations = [];
+
+Promise.all([
+  fetch("/cities.json"),
+  fetch("/person.json"),
+  fetch("/specializations.json"),
+])
+  .then(async ([citiesResponse, personResponse, specializationsResponse]) => {
+    const citiesJson = await citiesResponse.json();
+    const personJson = await personResponse.json();
+    const specializationsJson = await specializationsResponse.json();
+    return [citiesJson, personJson, specializationsJson];
+  })
+  .then((response) => {
+    cities = response[0];
+    users = response[1];
+    specializations = response[2];
+
+    // Решения:
+    // console.log(getInfo.call(users[7]))
+    // console.log(figmaDesigners())
+    // console.log(reactDeveloper())
+    // console.log(checkAge())
+    // console.log(sortBackDeveloper());
+    // console.log(hightLevelDesigner())
+    console.log(findTheBestTeam());
+  });
 
 function getInfo() {
   const city = cities.find(
@@ -10,24 +36,23 @@ function getInfo() {
   );
   return `${this.personal.firstName} ${this.personal.lastName}, ${city.name}`;
 }
-// console.log(getInfo.call(users[7]))
 
-const figmaDesigners = users.filter((user) =>
-  user.skills.some((skill) => skill.name === "Figma")
+
+const figmaDesigners = () => users.filter((user) =>
+  user.skills.some((skill)=> skill.name === "Figma")
 );
-// console.log(figmaDesigners)
 
-const reactDeveloper = users.find((user) =>
+
+const reactDeveloper = () => users.find((user) =>
   user.skills.some((skill) => skill.name === "React")
 );
-// console.log(reactDeveloper)
+
 
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth();
 const currentDay = currentDate.getDate();
-console.log(currentDate);
-const checkAge = users.every((user) => {
+const checkAge = () => users.every((user) => {
   const [day, month, year] = user.personal.birthday.split(".");
   if (currentYear - year > 18) {
     return true;
@@ -43,9 +68,9 @@ const checkAge = users.every((user) => {
     return false;
   }
 });
-// console.log(checkAge)
 
-const sortBackDeveloper = users
+
+const sortBackDeveloper = () => users
   .filter((user) => {
     const userCity = cities.find(
       (city) => user.personal.locationId === city.id
@@ -64,9 +89,9 @@ const sortBackDeveloper = users
     }
   })
   .sort((a, b) => a.request[0].value - b.request[0].value);
-// console.log(sortBackDeveloper);
 
-const hightLevelDesigner = users.filter((user) => {
+
+const hightLevelDesigner = () => users.filter((user) => {
   const skills = user.skills;
   for (let i = 0; i < skills.length; i++) {
     const currentSkills = skills.map((el) => el.name);
@@ -81,9 +106,9 @@ const hightLevelDesigner = users.filter((user) => {
     }
   }
 });
-//console.log(hightLevelDesigner)
 
-const findTheBestTeam = () => {
+
+function findTheBestTeam() {
   const theBestDesigner = users
     .filter((designerUser) => {
       if (designerUser.skills.some((skill) => skill.name === "Figma")) {
@@ -97,7 +122,6 @@ const findTheBestTeam = () => {
         b.skills.find((skill) => skill.name === "Figma").level -
         a.skills.find((skill) => skill.name === "Figma").level
     )[0];
-  console.log(theBestDesigner);
 
   const theBestFront = users
     .filter((frontUser) => {
@@ -112,7 +136,6 @@ const findTheBestTeam = () => {
         b.skills.find((skill) => skill.name === "Angular").level -
         a.skills.find((skill) => skill.name === "Angular").level
     )[0];
-  console.log(theBestFront);
 
   const theBestBack = users
     .filter((backUser) => {
@@ -127,8 +150,7 @@ const findTheBestTeam = () => {
         b.skills.find((skill) => skill.name === "Go").level -
         a.skills.find((skill) => skill.name === "Go").level
     )[0];
-  console.log(theBestBack);
   return [theBestDesigner, theBestFront, theBestBack];
-};
+}
 
-console.log(findTheBestTeam());
+
